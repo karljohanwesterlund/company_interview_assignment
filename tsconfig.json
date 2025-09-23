@@ -12,7 +12,8 @@
         "isolatedModules": true,
         "paths": {
             "@app-types/*": ["./src/types/*"]
-        }
+        },
+        "types": ["node", "jest"]
     },
     "include": ["src", "knexfile.ts"]
 }

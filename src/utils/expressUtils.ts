@@ -4,7 +4,7 @@ export const getMessageFromRequestBody = (request: Request): string => {
     const message = request.body.message;
     if (!message) {
         const error = new Error("'message' must exist.");
-        (error as any).status = 404;
+        (error as any).status = 400;
         throw error;
     }
     return message;
