@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { db } from './db';
+import { isMessagePalindrome } from './messageUtils';
 
 const router = Router();
 
@@ -52,7 +53,7 @@ router.get('/messages/:id', async (request, response) => {
 
 router.post('/messages', async (request, response: Response<MessageResponse>) => {
     const message = getMessageFromRequestBody(request);
-    const palindrome = false; // TODO
+    const palindrome = isMessagePalindrome(message);
 
     const result = await db('messages').insert({ message, palindrome }).returning('*');
     const messageResponse: MessageResponse = result[0] as MessageResponse;
