@@ -9,7 +9,10 @@
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
         "resolveJsonModule": true,
-        "isolatedModules": true
+        "isolatedModules": true,
+        "paths": {
+            "@app-types/*": ["./src/types/*"]
+        }
     },
     "include": ["src", "knexfile.ts"]
 }

@@ -1,63 +1,37 @@
 import { Router, Request, Response } from 'express';
 import { db } from './db';
-import { isMessagePalindrome } from './messageUtils';
+import { isMessagePalindrome } from './utils/messageUtils';
+import { getIdFromRequest, getMessageFromRequestBody } from './utils/expressUtils';
+import { MessageDTO } from '@app-types/MessageDTO';
 
 const router = Router();
 
-type MessageResponse = {
-    message: string;
-    id: number;
-    palindrome: boolean;
-    created_at: Date;
-    updated_at: Date;
-};
-
-const getMessageFromRequestBody = (request: Request): string => {
-    const message = request.body.message;
-    if (!message) {
-        const error = new Error("'message' must exist.");
-        (error as any).status = 404;
-        throw error;
-    }
-    return message;
-};
-
-const getIdFromRequest = (request: Request): number => {
-    const id: number = Number.parseInt(request.params.id, 10);
-    if (Number.isNaN(id)) {
-        const error = new Error("'id' must be a number.");
-        (error as any).status = 400;
-        throw error;
-    }
-    return id;
-};
-
 const getMessageFromDatabase = async (id: number) => {
     const result = await db('messages').select('*').where({ id });
-    const messageResponse: MessageResponse = result[0] as MessageResponse;
+    const messageResponse: MessageDTO = result[0] as MessageDTO;
     return messageResponse;
 };
 
-router.get('/messages/:id', async (request, response) => {
+router.get('/messages/:id', async (request: Request, response: Response<MessageDTO>) => {
     const id = getIdFromRequest(request);
 
-    const messageResponse: MessageResponse = await getMessageFromDatabase(id);
-    if (!messageResponse) {
+    const messageDTO: MessageDTO = await getMessageFromDatabase(id);
+    if (!messageDTO) {
         const error = new Error(`Message with id ${id} not found.`);
         (error as any).status = 404;
         throw error;
     }
 
-    response.json(messageResponse);
+    response.json(messageDTO);
 });
 
-router.post('/messages', async (request, response: Response<MessageResponse>) => {
+router.post('/messages', async (request: Request, response: Response<MessageDTO>) => {
     const message = getMessageFromRequestBody(request);
     const palindrome = isMessagePalindrome(message);
 
     const result = await db('messages').insert({ message, palindrome }).returning('*');
-    const messageResponse: MessageResponse = result[0] as MessageResponse;
-    response.json(messageResponse);
+    const messageDTO: MessageDTO = result[0] as MessageDTO;
+    response.json(messageDTO);
 });
 
 export default router;
