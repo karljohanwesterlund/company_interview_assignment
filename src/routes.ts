@@ -1,16 +1,9 @@
 import { Router, Request, Response } from 'express';
-import { db } from './db';
-import { isMessagePalindrome } from './utils/messageUtils';
+import { getMessageFromDatabase, insertMessageToDatabase } from './database';
 import { getIdFromRequest, getMessageFromRequestBody } from './utils/expressUtils';
 import { MessageDTO } from '@app-types/MessageDTO';
 
 const router = Router();
-
-const getMessageFromDatabase = async (id: number) => {
-    const result = await db('messages').select('*').where({ id });
-    const messageResponse: MessageDTO = result[0] as MessageDTO;
-    return messageResponse;
-};
 
 router.get('/messages/:id', async (request: Request, response: Response<MessageDTO>) => {
     const id = getIdFromRequest(request);
@@ -27,10 +20,7 @@ router.get('/messages/:id', async (request: Request, response: Response<MessageD
 
 router.post('/messages', async (request: Request, response: Response<MessageDTO>) => {
     const message = getMessageFromRequestBody(request);
-    const palindrome = isMessagePalindrome(message);
-
-    const result = await db('messages').insert({ message, palindrome }).returning('*');
-    const messageDTO: MessageDTO = result[0] as MessageDTO;
+    const messageDTO: MessageDTO = await insertMessageToDatabase(message);
     response.json(messageDTO);
 });
 

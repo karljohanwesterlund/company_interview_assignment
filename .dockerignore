@@ -4,3 +4,4 @@ Dockerfile
 .dockerignore
 .env
 docker/postgres-data
+test/integration-test/testDatabase.sqlite

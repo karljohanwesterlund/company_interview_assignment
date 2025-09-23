@@ -2,3 +2,4 @@ node_modules
 dist
 .env
 docker/postgres-data
+test/integration-test/testDatabase.sqlite

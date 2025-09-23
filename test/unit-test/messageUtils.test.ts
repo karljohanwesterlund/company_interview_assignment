@@ -1,4 +1,4 @@
-import { isMessagePalindrome } from '../src/utils/messageUtils';
+import { isMessagePalindrome } from '../../src/utils/messageUtils';
 
 describe('message utils', () => {
     describe('isMessagePalindrome', () => {

@@ -26,15 +26,15 @@ const config: { [key: string]: Knex.Config } = {
         ...shared,
     },
     test: {
-        client: 'pg',
+        client: 'sqlite3',
         connection: {
-            host: process.env.DATABASE_HOST,
-            port: parseInt(process.env.DATABASE_PORT || '5432', 10),
-            user: process.env.DATABASE_USER,
-            password: process.env.DATABASE_PASSWORD,
-            database: process.env.DATABASE_NAME,
+            filename: './test/integration-test/testDatabase.sqlite',
         },
-        ...shared,
+        useNullAsDefault: true,
+        migrations: {
+            directory: './migrations',
+            extension: 'ts',
+        },
     },
     production: {
         client: 'pg',

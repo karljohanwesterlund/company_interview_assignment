@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request } from 'express';
 
 export const getMessageFromRequestBody = (request: Request): string => {
     const message = request.body.message;
