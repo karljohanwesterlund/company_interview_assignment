@@ -7,7 +7,11 @@
         "development": "tsx watch src/server.ts",
         "build": "rimraf dist && tsc -p tsconfig.json",
         "start": "node dist/server.js",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "knex": "node -r ts-node/register ./node_modules/knex/bin/cli.js --knexfile knexfile.ts",
+        "knex:create": "npm run knex -- migrate:make",
+        "knex:migrate": "npm run knex -- migrate:latest",
+        "knex:seed": "npm run knex -- seed:run"
     },
     "keywords": [],
     "author": "",
@@ -16,6 +20,7 @@
     "dependencies": {
         "dotenv": "17.2.2",
         "express": "5.1.0",
+        "knex": "3.1.0",
         "pg": "8.16.3"
     },
     "devDependencies": {
@@ -23,6 +28,7 @@
         "@types/node": "24.5.2",
         "@types/pg": "8.15.5",
         "rimraf": "6.0.1",
+        "ts-node": "10.9.2",
         "tsx": "4.20.5",
         "typescript": "5.9.2"
     }

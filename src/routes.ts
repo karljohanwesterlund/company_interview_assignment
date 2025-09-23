@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { query } from './db';
+import { db } from './db';
 
 const router = Router();
 
@@ -32,8 +32,8 @@ const getIdFromRequest = (request: Request): number => {
 };
 
 const getMessageFromDatabase = async (id: number) => {
-    const result = await query(`SELECT * FROM messages WHERE id=$1;`, [id]);
-    const messageResponse: MessageResponse = result.rows[0] as MessageResponse;
+    const result = await db('messages').select('*').where({ id });
+    const messageResponse: MessageResponse = result[0] as MessageResponse;
     return messageResponse;
 };
 
@@ -54,8 +54,8 @@ router.post('/messages', async (request, response: Response<MessageResponse>) =>
     const message = getMessageFromRequestBody(request);
     const palindrome = false; // TODO
 
-    const result = await query(`INSERT INTO messages (message, palindrome) VALUES ($1, $2) RETURNING *;`, [message, palindrome]);
-    const messageResponse: MessageResponse = result.rows[0] as MessageResponse;
+    const result = await db('messages').insert({ message, palindrome }).returning('*');
+    const messageResponse: MessageResponse = result[0] as MessageResponse;
     response.json(messageResponse);
 });
 

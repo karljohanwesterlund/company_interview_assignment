@@ -1,13 +1,12 @@
-import { Pool } from 'pg';
+import knex, { Knex } from 'knex';
+import config from '../knexfile';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
-const pool = new Pool({
-    user: process.env.DATABASE_USER || 'postgres',
-    password: process.env.DATABASE_PASS || 'postgres',
-    host: process.env.DATABASE_HOST || 'database',
-    database: process.env.DATABASE_NAME || 'message_database',
-    port: parseInt(process.env.DATABASE_PORT || '5432'),
+const env = process.env.NODE_ENV || 'development';
+export const db: Knex = knex((config as any)[env]);
+
+process.on('SIGINT', async () => {
+    await db.destroy();
+    process.exit(0);
 });
-
-export const query = async (text: string, params?: any[]) => {
-    return await pool.query(text, params);
-};
