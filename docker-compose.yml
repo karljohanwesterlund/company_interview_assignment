@@ -1,0 +1,26 @@
+services:
+    database:
+        image: postgres:17
+        restart: always
+        ports:
+            - '5432:5432'
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: message_database
+        volumes:
+            - ./docker/db-scripts/:/docker-entrypoint-initdb.d/
+            - ./docker/postgres-data:/var/lib/postgresql/data
+    backend:
+        build:
+            context: .
+            dockerfile: Dockerfile
+            target: production
+        ports:
+            - '8080:8080'
+        environment:
+            PORT: '8080'
+        depends_on:
+            - 'database'
+        tty: true
+        restart: unless-stopped
