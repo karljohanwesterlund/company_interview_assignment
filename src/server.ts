@@ -1,22 +1,22 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import routes from './routes.js';
 
 const app = express();
 app.use(express.json());
 app.use('/', routes);
 
-app.use((request, _response, next) => {
+app.use((request: Request, _response: Response, next: NextFunction) => {
     console.log(`${request.method} ${request.url}`);
     next();
 });
 
-app.use((_request, response) => {
+app.use((_request: Request, response: Response) => {
     response.status(404).json({ error: 'Not found' });
 });
 
-app.use((error: unknown, _request: express.Request, response: express.Response) => {
+app.use((error: any, _request: Request, response: Response, _next: NextFunction) => {
     console.error(error);
-    response.status(500).json({ error: 'Internal Server Error' });
+    response.status(error.status || 500).json({ error: error.message || 'Internal Server Error' });
 });
 
 const PORT = Number(process.env.PORT) || 8080;
