@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { getMessageFromDatabase, insertMessageToDatabase, updateMessageInDatabase } from './database';
+import { deleteMessageFromDatabase, getMessageFromDatabase, insertMessageToDatabase, updateMessageInDatabase } from './database';
 import { getIdFromRequest, getMessageFromRequestBody } from './utils/expressUtils';
 import { MessageDTO } from '@app-types/MessageDTO';
 
@@ -35,6 +35,19 @@ router.put('/messages/:id', async (request, response: Response<MessageDTO>) => {
     }
 
     const messageDTO: MessageDTO = await updateMessageInDatabase(id, message);
+    response.json(messageDTO);
+});
+
+router.delete('/messages/:id', async (request, response: Response<MessageDTO>) => {
+    const id = getIdFromRequest(request);
+    const existingMessage = await getMessageFromDatabase(id);
+    if (!existingMessage) {
+        const error = new Error(`Message with id ${id} not found.`);
+        (error as any).status = 404;
+        throw error;
+    }
+
+    const messageDTO: MessageDTO = await deleteMessageFromDatabase(id);
     response.json(messageDTO);
 });
 

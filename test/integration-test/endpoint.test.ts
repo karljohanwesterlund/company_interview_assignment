@@ -101,3 +101,29 @@ describe('PUT /messages/:id', () => {
         expect(updatedMessage.updated_at).toBe(returnValue.updated_at);
     });
 });
+
+describe('DELETE /messages/:id', () => {
+    it('should return 400 if the id in query is not a number', async () => {
+        const result = await request(app).delete('/messages/test');
+        expect(result.status).toBe(400);
+        expect(result.text).toBe('{"error":"\'id\' must exist or be a number."}');
+    });
+
+    it('should return 200 and the DB message', async () => {
+        const [message, palindrome, created_at, updated_at] = ['abc', true, new Date(0).getTime(), new Date(0).getTime()];
+        const createdEntry = await database('messages').insert({ message, palindrome, created_at, updated_at }).returning('*');
+        const createdEntryId = createdEntry[0].id;
+        const result = await request(app).delete(`/messages/${createdEntryId}`).send({ message });
+        expect(result.status).toBe(200);
+
+        const returnValue = JSON.parse(result.text);
+        expect(returnValue.id).toBeDefined();
+        expect(returnValue.message).toBe(message);
+        expect(returnValue.palindrome).toBeTruthy();
+        expect(returnValue.created_at).toBeDefined();
+        expect(returnValue.updated_at).toBeDefined();
+
+        const deletedMessage = (await database('messages').select('*').where({ id: createdEntryId }))[0];
+        expect(deletedMessage).toBeUndefined;
+    });
+});

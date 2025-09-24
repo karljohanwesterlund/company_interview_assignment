@@ -36,3 +36,10 @@ export const updateMessageInDatabase = async (id: number, message: string) => {
     const messageDTO: MessageDTO = result[0] as MessageDTO;
     return messageDTO;
 };
+
+export const deleteMessageFromDatabase = async (id: number) => {
+    const entyToDelete = await database('messages').select('*').where({ id });
+    await database('messages').where({ id }).del().returning('*');
+    const messageDTO: MessageDTO = entyToDelete[0] as MessageDTO;
+    return messageDTO;
+};
