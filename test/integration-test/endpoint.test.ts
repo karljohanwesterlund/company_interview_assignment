@@ -51,5 +51,53 @@ describe('POST /messages', () => {
         expect(returnValue.palindrome).toBeFalsy();
         expect(returnValue.created_at).toBeDefined();
         expect(returnValue.updated_at).toBeDefined();
+
+        const createdMessage = (await database('messages').select('*').where({ id: returnValue.id }))[0];
+        expect(createdMessage.id).toBe(returnValue.id);
+        expect(createdMessage.message).toBe(message);
+        expect(createdMessage.palindrome).toBeFalsy();
+        expect(createdMessage.created_at).toBeDefined();
+        expect(createdMessage.updated_at).toBeDefined();
+    });
+});
+
+describe('PUT /messages/:id', () => {
+    it('should return 400 if the id in query is not a number', async () => {
+        const result = await request(app).put('/messages/test').send();
+        expect(result.status).toBe(400);
+        expect(result.text).toBe('{"error":"\'id\' must exist or be a number."}');
+    });
+
+    it('should return 400 if there is no message in body', async () => {
+        const result = await request(app).put('/messages/0').send({});
+        expect(result.status).toBe(400);
+        expect(result.text).toBe('{"error":"\'message\' must exist."}');
+    });
+
+    it('should return 404 if the message does not exist', async () => {
+        const id: number = 0;
+        const result = await request(app).put(`/messages/${id}`).send({ message: '123 123' });
+        expect(result.status).toBe(404);
+        expect(result.text).toBe(`{"error":"Message with id ${id} not found."}`);
+    });
+
+    it('should return 200 and the DB message on successful request', async () => {
+        const [message, palindrome, created_at, updated_at] = ['abc', true, new Date(0).getTime(), new Date(0).getTime()];
+        const createdEntry = await database('messages').insert({ message, palindrome, created_at, updated_at }).returning('*');
+        const createdEntryId = createdEntry[0].id;
+        const newMessage = 'my new message';
+
+        const result = await request(app).put(`/messages/${createdEntryId}`).send({ message: newMessage });
+        expect(result.status).toBe(200);
+        const returnValue = JSON.parse(result.text);
+        expect(returnValue.id).toBe(createdEntryId);
+        expect(returnValue.message).toBe(newMessage);
+        expect(returnValue.palindrome).toBeFalsy();
+        expect(returnValue.created_at).toBeDefined();
+        expect(returnValue.updated_at).toBeGreaterThan(returnValue.created_at);
+
+        const updatedMessage = (await database('messages').select('*').where({ id: createdEntryId }))[0];
+        expect(updatedMessage.message).toBe(newMessage);
+        expect(updatedMessage.updated_at).toBe(returnValue.updated_at);
     });
 });

@@ -13,7 +13,7 @@ export const getMessageFromRequestBody = (request: Request): string => {
 export const getIdFromRequest = (request: Request): number => {
     const id: number = Number.parseInt(request.params.id, 10);
     if (Number.isNaN(id)) {
-        const error = new Error("'id' must be a number.");
+        const error = new Error("'id' must exist or be a number.");
         (error as any).status = 400;
         throw error;
     }

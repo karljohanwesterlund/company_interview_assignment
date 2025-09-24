@@ -26,3 +26,13 @@ export const insertMessageToDatabase = async (message: string) => {
     const messageDTO: MessageDTO = result[0] as MessageDTO;
     return messageDTO;
 };
+
+export const updateMessageInDatabase = async (id: number, message: string) => {
+    const palindrome = isMessagePalindrome(message);
+    const result = await database('messages')
+        .update({ message, palindrome, updated_at: new Date().getTime() })
+        .where({ id })
+        .returning('*');
+    const messageDTO: MessageDTO = result[0] as MessageDTO;
+    return messageDTO;
+};
