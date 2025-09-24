@@ -30,7 +30,7 @@ export const insertMessageToDatabase = async (message: string): Promise<MessageD
 export const updateMessageInDatabase = async (id: number, message: string): Promise<MessageDTO> => {
     const palindrome = isMessagePalindrome(message);
     const result = await database('messages')
-        .update({ message, palindrome, updated_at: new Date().getTime() })
+        .update({ message, palindrome, updated_at: new Date().toISOString() })
         .where({ id })
         .returning('*');
     const messageDTO: MessageDTO = result[0] as MessageDTO;
