@@ -61,22 +61,22 @@ describe('POST /messages', () => {
     });
 });
 
-describe('PUT /messages/:id', () => {
+describe('PATCH /messages/:id', () => {
     it('should return 400 if the id in query is not a number', async () => {
-        const result = await request(app).put('/messages/test').send();
+        const result = await request(app).patch('/messages/test').send();
         expect(result.status).toBe(400);
         expect(result.text).toBe('{"error":"\'id\' must exist or be a number."}');
     });
 
     it('should return 400 if there is no message in body', async () => {
-        const result = await request(app).put('/messages/0').send({});
+        const result = await request(app).patch('/messages/0').send({});
         expect(result.status).toBe(400);
         expect(result.text).toBe('{"error":"\'message\' must exist."}');
     });
 
     it('should return 404 if the message does not exist', async () => {
         const id: number = 0;
-        const result = await request(app).put(`/messages/${id}`).send({ message: '123 123' });
+        const result = await request(app).patch(`/messages/${id}`).send({ message: '123 123' });
         expect(result.status).toBe(404);
         expect(result.text).toBe(`{"error":"Message with id ${id} not found."}`);
     });
@@ -87,7 +87,7 @@ describe('PUT /messages/:id', () => {
         const createdEntryId = createdEntry[0].id;
         const newMessage = 'aabaa';
 
-        const result = await request(app).put(`/messages/${createdEntryId}`).send({ message: newMessage });
+        const result = await request(app).patch(`/messages/${createdEntryId}`).send({ message: newMessage });
         expect(result.status).toBe(200);
         const returnValue = JSON.parse(result.text);
         expect(returnValue.id).toBe(createdEntryId);

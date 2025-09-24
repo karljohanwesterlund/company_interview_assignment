@@ -30,7 +30,7 @@ router.post('/messages', async (request: Request, response: Response<MessageDTO>
     response.json(messageDTO);
 });
 
-router.put('/messages/:id', async (request, response: Response<MessageDTO>) => {
+router.patch('/messages/:id', async (request, response: Response<MessageDTO>) => {
     const id = getIdFromRequest(request);
     const message = getMessageFromRequestBody(request);
     const existingMessage = await getMessageFromDatabase(id);
