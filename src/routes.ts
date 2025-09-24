@@ -1,5 +1,11 @@
 import { Router, Request, Response } from 'express';
-import { deleteMessageFromDatabase, getMessageFromDatabase, insertMessageToDatabase, updateMessageInDatabase } from './database';
+import {
+    deleteMessageFromDatabase,
+    getMessageFromDatabase,
+    getMessagesFromDatabase,
+    insertMessageToDatabase,
+    updateMessageInDatabase,
+} from './database';
 import { getIdFromRequest, getMessageFromRequestBody } from './utils/expressUtils';
 import { MessageDTO } from '@app-types/MessageDTO';
 
@@ -49,6 +55,11 @@ router.delete('/messages/:id', async (request, response: Response<MessageDTO>) =
 
     const messageDTO: MessageDTO = await deleteMessageFromDatabase(id);
     response.json(messageDTO);
+});
+
+router.get('/messages', async (_request: Request, response: Response<MessageDTO[]>) => {
+    const messageDTOs: MessageDTO[] = await getMessagesFromDatabase();
+    response.json(messageDTOs);
 });
 
 export default router;

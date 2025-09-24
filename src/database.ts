@@ -14,20 +14,20 @@ process.on('SIGINT', async () => {
     process.exit(0);
 });
 
-export const getMessageFromDatabase = async (id: number) => {
+export const getMessageFromDatabase = async (id: number): Promise<MessageDTO> => {
     const result = await database('messages').select('*').where({ id });
     const messageDTO: MessageDTO = result[0] as MessageDTO;
     return messageDTO;
 };
 
-export const insertMessageToDatabase = async (message: string) => {
+export const insertMessageToDatabase = async (message: string): Promise<MessageDTO> => {
     const palindrome = isMessagePalindrome(message);
     const result = await database('messages').insert({ message, palindrome }).returning('*');
     const messageDTO: MessageDTO = result[0] as MessageDTO;
     return messageDTO;
 };
 
-export const updateMessageInDatabase = async (id: number, message: string) => {
+export const updateMessageInDatabase = async (id: number, message: string): Promise<MessageDTO> => {
     const palindrome = isMessagePalindrome(message);
     const result = await database('messages')
         .update({ message, palindrome, updated_at: new Date().getTime() })
@@ -37,9 +37,15 @@ export const updateMessageInDatabase = async (id: number, message: string) => {
     return messageDTO;
 };
 
-export const deleteMessageFromDatabase = async (id: number) => {
+export const deleteMessageFromDatabase = async (id: number): Promise<MessageDTO> => {
     const entyToDelete = await database('messages').select('*').where({ id });
     await database('messages').where({ id }).del().returning('*');
     const messageDTO: MessageDTO = entyToDelete[0] as MessageDTO;
     return messageDTO;
+};
+
+export const getMessagesFromDatabase = async (): Promise<MessageDTO[]> => {
+    const result = await database('messages').select('*');
+    const messageDTOs: MessageDTO[] = result as MessageDTO[];
+    return messageDTOs;
 };

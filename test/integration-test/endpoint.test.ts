@@ -82,17 +82,17 @@ describe('PUT /messages/:id', () => {
     });
 
     it('should return 200 and the DB message on successful request', async () => {
-        const [message, palindrome, created_at, updated_at] = ['abc', true, new Date(0).getTime(), new Date(0).getTime()];
+        const [message, palindrome, created_at, updated_at] = ['abc', false, new Date(0).getTime(), new Date(0).getTime()];
         const createdEntry = await database('messages').insert({ message, palindrome, created_at, updated_at }).returning('*');
         const createdEntryId = createdEntry[0].id;
-        const newMessage = 'my new message';
+        const newMessage = 'aabaa';
 
         const result = await request(app).put(`/messages/${createdEntryId}`).send({ message: newMessage });
         expect(result.status).toBe(200);
         const returnValue = JSON.parse(result.text);
         expect(returnValue.id).toBe(createdEntryId);
         expect(returnValue.message).toBe(newMessage);
-        expect(returnValue.palindrome).toBeFalsy();
+        expect(returnValue.palindrome).toBeTruthy();
         expect(returnValue.created_at).toBeDefined();
         expect(returnValue.updated_at).toBeGreaterThan(returnValue.created_at);
 
@@ -125,5 +125,36 @@ describe('DELETE /messages/:id', () => {
 
         const deletedMessage = (await database('messages').select('*').where({ id: createdEntryId }))[0];
         expect(deletedMessage).toBeUndefined;
+    });
+});
+
+describe('GET /messages', () => {
+    it('should return an emplty list if there is no messages', async () => {
+        await database('messages').truncate();
+        const result = await request(app).get('/messages');
+        expect(result.status).toBe(200);
+        const returnValue = JSON.parse(result.text);
+        expect(returnValue.length).toBe(0);
+        expect(returnValue).toStrictEqual([]);
+    });
+
+    it('should return 200 and a list of messages', async () => {
+        await database('messages').truncate();
+        const [message1, palindrome1, created_at1, updated_at1] = ['abc', true, new Date().getTime(), new Date().getTime()];
+        const [message2, palindrome2, created_at2, updated_at2] = ['dfg', false, new Date(3).getTime(), new Date(3).getTime()];
+        const createdEntry1 = await database('messages')
+            .insert({ message: message1, palindrome: palindrome1, created_at: created_at1, updated_at: updated_at1 })
+            .returning('*');
+        const createdEntry2 = await database('messages')
+            .insert({ message: message2, palindrome: palindrome2, created_at: created_at2, updated_at: updated_at2 })
+            .returning('*');
+
+        const result = await request(app).get(`/messages`);
+        expect(result.status).toBe(200);
+        const returnValue = JSON.parse(result.text);
+        expect(returnValue.length).toBe(2);
+        const returnIds = returnValue.map((message: any) => message.id);
+        expect(returnIds).toContain(createdEntry1[0].id);
+        expect(returnIds).toContain(createdEntry2[0].id);
     });
 });
