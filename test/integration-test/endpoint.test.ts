@@ -45,7 +45,7 @@ describe('POST /messages', () => {
         const result = await request(app).post('/messages').send({ message });
         expect(result.status).toBe(201);
 
-        const returnValue = JSON.parse(result.text);
+        const returnValue = result.body;
         expect(returnValue.id).toBeDefined();
         expect(returnValue.message).toBe(message);
         expect(returnValue.palindrome).toBeFalsy();
@@ -89,7 +89,7 @@ describe('PATCH /messages/:id', () => {
 
         const result = await request(app).patch(`/messages/${createdEntryId}`).send({ message: newMessage });
         expect(result.status).toBe(200);
-        const returnValue = JSON.parse(result.text);
+        const returnValue = result.body;
         expect(returnValue.id).toBe(createdEntryId);
         expect(returnValue.message).toBe(newMessage);
         expect(returnValue.palindrome).toBeTruthy();
@@ -116,7 +116,7 @@ describe('DELETE /messages/:id', () => {
         const result = await request(app).delete(`/messages/${createdEntryId}`).send({ message });
         expect(result.status).toBe(200);
 
-        const returnValue = JSON.parse(result.text);
+        const returnValue = result.body;
         expect(returnValue.id).toBeDefined();
         expect(returnValue.message).toBe(message);
         expect(returnValue.palindrome).toBeTruthy();
@@ -133,7 +133,7 @@ describe('GET /messages', () => {
         await database('messages').truncate();
         const result = await request(app).get('/messages');
         expect(result.status).toBe(200);
-        const returnValue = JSON.parse(result.text);
+        const returnValue = result.body;
         expect(returnValue.length).toBe(0);
         expect(returnValue).toStrictEqual([]);
     });
@@ -151,7 +151,7 @@ describe('GET /messages', () => {
 
         const result = await request(app).get(`/messages`);
         expect(result.status).toBe(200);
-        const returnValue = JSON.parse(result.text);
+        const returnValue = result.body;
         expect(returnValue.length).toBe(2);
         const returnIds = returnValue.map((message: any) => message.id);
         expect(returnIds).toContain(createdEntry1[0].id);
