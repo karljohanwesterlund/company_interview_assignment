@@ -27,7 +27,7 @@ router.get('/messages/:id', async (request: Request, response: Response<MessageD
 router.post('/messages', async (request: Request, response: Response<MessageDTO>) => {
     const message = getMessageFromRequestBody(request);
     const messageDTO: MessageDTO = await insertMessageToDatabase(message);
-    response.json(messageDTO);
+    response.status(201).json(messageDTO);
 });
 
 router.patch('/messages/:id', async (request, response: Response<MessageDTO>) => {

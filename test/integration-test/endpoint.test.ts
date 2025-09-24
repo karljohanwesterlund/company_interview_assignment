@@ -40,10 +40,10 @@ describe('POST /messages', () => {
         expect(result.text).toBe('{"error":"\'message\' must exist."}');
     });
 
-    it('should return 200 and the DB message', async () => {
+    it('should return 201 and the DB message', async () => {
         const message = 'Hi';
         const result = await request(app).post('/messages').send({ message });
-        expect(result.status).toBe(200);
+        expect(result.status).toBe(201);
 
         const returnValue = JSON.parse(result.text);
         expect(returnValue.id).toBeDefined();
