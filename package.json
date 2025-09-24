@@ -6,7 +6,7 @@
     "scripts": {
         "development": "tsx watch src/server.ts",
         "build": "rimraf dist && tsc -p tsconfig.json",
-        "start": "node dist/server.js",
+        "start": "node dist/src/server.js",
         "test": "NODE_ENV=test npx jest",
         "test:integration": "NODE_ENV=test jest --testPathPatterns=test/integration-test",
         "test:unit": "NODE_ENV=test jest --testPathPatterns=test/unit-test",

@@ -10,6 +10,7 @@ beforeAll(async () => {
     }
     await database.migrate.latest();
 });
+
 afterAll(async () => {
     await database('messages').truncate();
     await database.destroy();
