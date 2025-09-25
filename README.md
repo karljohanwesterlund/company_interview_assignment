@@ -1,4 +1,4 @@
-# Development assignment
+# [Development assignment](#assignment)
 
 > Create an application which manages messages and provides details about those messages,
 > specifically whether or not a message is a palindrome. Your application should support the
@@ -9,24 +9,24 @@
 >
 > These operations should follow proper RESTful design.
 
-## Setup
+## [Setup](#setup)
 
-### Prerequisits
+### [Prerequisits](#prerequisits)
 
 The following installed:
 
 -   Docker
 -   Node 24.8.0
 
-### Environment files
+### [Environment files](#env)
 
 First, set up the three needed env files:
 
 ```bash
-cp .env.example .env && cp .env.example .env.dc && cp database.env.example database.env
+cp .env.example .env && cp database.env.example database.env
 ```
 
-The `.env` file is used for development when running the server not in a container (such as `npm run development` or knex migrations). The `.env.dc` and `database.env` file is used for docker compose using "production".
+The `.env` file is used for development when running the server not in a container (such as `npm run development` or knex migrations). The `database.env` file is used for docker compose using "production".
 
 An example of an `.env` file would be
 
@@ -39,9 +39,9 @@ DATABASE_NAME=message_database
 DATABASE_PORT=5432
 ```
 
-The major change in a `.env.dc` file would be, a part from the username/passwords, that the _DATABASE_HOST_ should point to the service name ("database" according to `docker-compose.yml`).
+The docker-compose YML-files share this configuration, the main difference is that **DATABASE_HOST** is set to the service name.
 
-### Installation & running
+### [Installation & running](#install)
 
 Run npm install
 
@@ -61,11 +61,44 @@ This will initialize a new databse and star the application. We need to run the 
 npm run knex:migrate
 ```
 
-## Documentation
+**NOTE:** The `.env` file needs to point to localhost/127.0.0.1 for this to work.
 
-The API has a swagger documentation that is hosted on (http://localhost:8080/api-docs)[http://localhost:8080/api-docs] when the service is running.
+Now the application is running and can take requests. Either use the swagger UI (See [Documentation](#documentation)) or CURL:
 
-## Tests
+```bash
+# Create entry
+curl -X POST http://localhost:8080/messages \
+  -H "Content-Type: application/json" \
+  -d '{"message":"My message"}'
+
+# Update message on entry with ID 4
+curl -X PATCH http://localhost:8080/messages/4 \
+  -H "Content-Type: application/json" \
+  -d '{"message":"abcba"}'
+
+# Retreive message with ID 4
+curl http://localhost:8080/messages/4
+
+# Delete message with ID 4
+curl -X DELETE http://localhost:8080/messages/4
+
+# List all messages
+curl http://localhost:8080/messages
+```
+
+### [Development](#development)
+
+Hot reload is setup if there is a need for it while running the server. Build/run with the `docker-compose-dev.yml` file:
+
+```
+docker compose -f docker-compose-dev.yml build && docker compose -f docker-compose-dev.yml up
+```
+
+## [Documentation](#documentation)
+
+The API has a swagger documentation that is hosted on [http://localhost:8080/api-docs](http://localhost:8080/api-docs) when the service is running.
+
+## [Tests](#tests)
 
 Tests are run via `npm run test` - this runs both jest unit tests and supertest integration/endpoint tests.
 

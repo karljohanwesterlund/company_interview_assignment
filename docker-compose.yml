@@ -15,8 +15,14 @@ services:
             target: production
         ports:
             - '8080:8080'
-        env_file:
-            - .env.dc
+        environment:
+            NODE_ENV: production
+            PORT: 8080
+            DATABASE_USER: postgres
+            DATABASE_PASSWORD: postgres
+            DATABASE_HOST: database
+            DATABASE_NAME: message_database
+            DATABASE_PORT: 5432
         depends_on:
             - 'database'
         tty: true
