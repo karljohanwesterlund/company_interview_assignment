@@ -45,6 +45,8 @@ router.get('/api-docs', swaggerUi.setup(specs));
  *           type: integer
  *         message:
  *           type: string
+ *         palindrome:
+ *           type: boolean
  *         created_at:
  *           type: string
  *           format: date-time

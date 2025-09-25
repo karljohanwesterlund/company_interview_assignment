@@ -9,6 +9,14 @@
 >
 > These operations should follow proper RESTful design.
 
+## [Architecture](#architecture)
+
+The application consists of a backend built in TypeScript with Express, and a PostSQL database.
+
+The backend hosts the five API endpoints and a Swagger UI containing breif OpenAPI description of the endpoints.
+
+The database consists of one table, holding the messages and data about them.
+
 ## [Setup](#setup)
 
 ### [Prerequisits](#prerequisits)
@@ -31,6 +39,7 @@ The `.env` file is used for development when running the server not in a contain
 An example of an `.env` file would be
 
 ```
+NODE_ENV=development
 PORT=8080
 DATABASE_USER=postgres
 DATABASE_PASSWORD=postgres
@@ -55,7 +64,7 @@ As the application uses a database (PostgreSQL) for demoing, we need to buld & s
 docker compose build && docker compose up -d
 ```
 
-This will initialize a new databse and star the application. We need to run the knex migration to set up the database:
+This will initialize a new databse and start the application. We need to run the knex migration to set up the database:
 
 ```
 npm run knex:migrate
@@ -63,7 +72,7 @@ npm run knex:migrate
 
 **NOTE:** The `.env` file needs to point to localhost/127.0.0.1 for this to work.
 
-Now the application is running and can take requests. Either use the swagger UI (See [Documentation](#documentation)) or CURL:
+Now the application is running and can take requests. Either use the Swagger UI (See [Documentation](#documentation)) or CURL:
 
 ```bash
 # Create entry
@@ -71,16 +80,16 @@ curl -X POST http://localhost:8080/messages \
   -H "Content-Type: application/json" \
   -d '{"message":"My message"}'
 
-# Update message on entry with ID 4
-curl -X PATCH http://localhost:8080/messages/4 \
+# Update message on entry with ID 1
+curl -X PATCH http://localhost:8080/messages/1 \
   -H "Content-Type: application/json" \
   -d '{"message":"abcba"}'
 
-# Retreive message with ID 4
-curl http://localhost:8080/messages/4
+# Retreive message with ID 1
+curl http://localhost:8080/messages/1
 
-# Delete message with ID 4
-curl -X DELETE http://localhost:8080/messages/4
+# Delete message with ID 1
+curl -X DELETE http://localhost:8080/messages/1
 
 # List all messages
 curl http://localhost:8080/messages
@@ -96,10 +105,11 @@ docker compose -f docker-compose-dev.yml build && docker compose -f docker-compo
 
 ## [Documentation](#documentation)
 
-The API has a swagger documentation that is hosted on [http://localhost:8080/api-docs](http://localhost:8080/api-docs) when the service is running.
+The API has a Swagger documentation that is hosted on [http://localhost:8080/api-docs](http://localhost:8080/api-docs) when the service is running.
 
 ## [Tests](#tests)
 
 Tests are run via `npm run test` - this runs both jest unit tests and supertest integration/endpoint tests.
+Integration tests uses sqlite as a database.
 
 To test only unit or integration test, run `npm run test:unit` / `npm run test:integration`.
