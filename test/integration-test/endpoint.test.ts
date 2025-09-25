@@ -100,7 +100,7 @@ describe('PATCH /messages/:id', () => {
         expect(returnValue.message).toBe(newMessage);
         expect(returnValue.palindrome).toBeTruthy();
         expect(returnValue.created_at).toBeDefined();
-        expect(returnValue.updated_at).toBeGreaterThan(returnValue.created_at);
+        expect(new Date(returnValue.updated_at).getTime()).toBeGreaterThan(new Date(returnValue.created_at).getTime());
 
         const updatedMessage = (await database('messages').select('*').where({ id: createdEntryId }))[0];
         expect(updatedMessage.message).toBe(newMessage);
